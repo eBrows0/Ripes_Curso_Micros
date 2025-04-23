@@ -1,1 +1,66 @@
+.data
+A:  .word 1, 2, 3,    4, 5, 6,    7, 8, 9 #[123]
+                                          #[456]
+                                          #[789]
 
+B:  .word 9, 8, 7,    6, 5, 4,    3, 2, 1 #Imaginar que está transpuesta para facilitar address :P                                       #[456]
+                                          #[963]
+                                          #[852]
+                                          #[741]
+
+C:  .word 0, 0, 0,    0, 0, 0,    0, 0, 0
+
+.text
+main:
+    #INICIALIZAR
+    la t0, A        # 0,0 de A
+    la t1, B        # 0,0 de B 
+    li t2, 0        # Resultado mult = 0
+    li t5, 0        # RESULTADO TOTAL
+    li t3, 0        # Contador multi = 0
+    li t4, 0        # Contador 1 = 0
+    li t6, 0        # Contador 2 = 0
+    li s2, 3        # Se usa pa los 3
+    li s3, 8        # Se usa pa los 8
+
+loop2:
+    bge t6, s2, flag2
+loop1:
+    bge t4, s2, flag1   # Si contador1 >= 3, Ya acabó el primer dígito
+    lw a0, 0(t0)
+    lw a1, 0(t1)
+    #Multiplicarlos
+    jal x0, mult
+endmult:
+    #Siguiente
+    addi t0, t0, 4
+    addi t1, t1, 4
+    addi t4, t4, 1
+    j loop1
+    
+flag1:
+    #IMPRIMIR t5
+    li t5, 0
+    li t4, 0
+    sub t0, t0, s3 #Bajamos t0 3  
+    addi t1, t1, 4 #Subimos t1 a la siguiente fila
+    addi t6, t6, 1
+    j loop2
+
+flag2:
+    #IMPRIMIR t5
+    li t5, 0
+    li t4, 0
+    
+
+mult:
+    bge t3, a0, endmult   # Si contador >= multiplicador, terminamos
+    add t2, t2, t0    # resultado += multiplicando
+    add t5, t5, t2
+    addi t3, t3, 1    # contador++
+    j mult
+
+
+    # Terminar programa
+    li a7, 10
+    ecall
